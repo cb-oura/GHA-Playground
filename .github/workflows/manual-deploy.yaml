@@ -39,7 +39,6 @@ jobs:
 
   # Execute the deployment using the dispatch environment and sha derived from the dispatch ref.
   deploy_env:
-    runs-on: ubuntu-latest
     name: Deploy Env
     needs: [get-sha]
     concurrency: deploy-${{ inputs.environment }}
