@@ -1,0 +1,49 @@
+name: Manual Deploy to Environment
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment to deploy to.'
+        type: choice
+        required: true
+        options:
+          - sandbox
+      ref:
+        description: 'The branch, tag, or Git SHA to deploy from'
+        type: string
+        required: true
+
+permissions:
+  id-token: write
+  contents: read
+  actions: write
+  packages: read
+
+jobs:
+  # The github.sha for this workflow will be based on the branch or tag used to kick off the workflow.
+  # In most cases this MUST be one of our protected branches to prevent manipulating the job from a branch.
+  # This job gets the sha of the provided ref to supply to the call_deploy workflow instead.
+  get-sha:
+    runs-on: ubuntu-latest
+    outputs:
+      sha: ${{ steps.get-sha.outputs.sha }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+      - name: Get SHA
+        id: get-sha
+        run: |
+          echo "sha=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+
+  # Execute the deployment using the dispatch environment and sha derived from the dispatch ref.
+  deploy_env:
+    name: Deploy Env
+    needs: [get-sha]
+    concurrency: deploy-${{ inputs.environment }}
+    uses: ./.github/workflows/call_deploy.yaml
+    with:
+      sha: ${{ needs.get-sha.outputs.sha }}
+      environment: ${{ inputs.environment }}
+    secrets: inherit
