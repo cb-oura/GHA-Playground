@@ -25,7 +25,7 @@ permissions:
 
 env:
   SHA: ${{ inputs.sha || github.sha }}
-  APP_ASSET_PATH: /b/a/ecom-website/${{ inputs.sha || github.sha }}
+  APP_ASSET_PATH: /b/a/ecom-website/${{ env.SHA }}
   ECR_REPOSITORY_NAME: ecom-website
 
 jobs:
