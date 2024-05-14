@@ -41,7 +41,6 @@ jobs:
   deploy_env:
     name: Deploy Env
     needs: [get-sha]
-    concurrency: deploy-${{ inputs.environment }}
     uses: ./.github/workflows/deployment.yaml
     with:
       sha: ${{ needs.get-sha.outputs.sha }}
