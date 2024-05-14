@@ -39,10 +39,11 @@ jobs:
 
   # Execute the deployment using the dispatch environment and sha derived from the dispatch ref.
   deploy_env:
+    runs-on: ubuntu-latest
     name: Deploy Env
     needs: [get-sha]
     concurrency: deploy-${{ inputs.environment }}
-    uses: ./.github/workflows/call_deploy.yaml
+    uses: ./.github/workflows/deployment.yaml
     with:
       sha: ${{ needs.get-sha.outputs.sha }}
       environment: ${{ inputs.environment }}
